@@ -256,6 +256,8 @@ class PhysicalRouterConfig(object):
                     route_config = etree.SubElement(static_config, "route")
                     etree.SubElement(route_config, "name").text = prefix
                     etree.SubElement(route_config, "discard")
+            if static_routes:
+                static_config = etree.SubElement(ri_opt, "static")
             for dest,next_hops in static_routes:
                 route_config = etree.SubElement(static_config, "route")
                 etree.SubElement(route_config, "name").text = static_route['dest']

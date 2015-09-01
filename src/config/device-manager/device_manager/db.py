@@ -308,8 +308,8 @@ class PhysicalRouterDM(DBBaseDM):
         pnf_dict = {}
         # make it fake for now
         # sholud save to the database, the allocation
-        self.vlan_dict = {"max": 2}
-        self.li_dict = {"max": 2}
+        self.vlan_dict = {}
+        self.li_dict = {}
         for pi_uuid in self.physical_interfaces:
             pi = PhysicalInterfaceDM.get(pi_uuid)
             if pi is None:
@@ -466,7 +466,7 @@ class PhysicalRouterDM(DBBaseDM):
                                    pnf_inters.add(pnf_li['name'])
                        
                         if pnf_inters:
-                           vrf_name = ri_obj.fq_name[-1] + '-' + if_type
+                           vrf_name = ri_obj.uuid + '-' + if_type
                            vrf_interfaces = pnf_inters
                            self.config_manager.add_routing_instance(vrf_name,
                                                                  import_set,
