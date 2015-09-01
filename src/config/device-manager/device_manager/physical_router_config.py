@@ -124,18 +124,16 @@ class PhysicalRouterConfig(object):
             self.logical_interface_config = etree.Element('interfaces')
         #allocate the vlan id and
         if vmi.service_instance_id in vlan_ids.keys():
-            vlan = vlan_ids[vmi.service_instance_id]
+            vlan = vlan_ids[vmi.service_instance_id][vmi.service_interface_type] + 1
         else:
-            vlan = vlan_ids['max'] + 1
-            vlan_ids['max'] = vlan
-            vlan_ids[vmi.service_instance_id] = vlan
+            vlan = 2
+            vlan_ids[vmi.service_instance_id] = {"left":1,"right":1}
+            vlan_ids[vmi.service_instance_id][vmi.service_interface_type] = vlan
         if pi.uuid in li_ids.keys():
-            li_id = li_ids[pi.uuid]
+            li_id = li_ids[pi.uuid] + 1
         else:
-            li_id = li_ids['max'] + 1
-            li_ids['max'] = li_id
+            li_id = 2
             li_ids[pi.uuid] = li_id
-        pdb.set_trace()
         #We peek the lower 22 bit of the uuid
         binary_instance_id = bin(vmi.service_instance_id)[-22:]
         #Add additonal 0 to it
@@ -163,7 +161,6 @@ class PhysicalRouterConfig(object):
         li_config=etree.fromstring("""
             <interface>
                 <name>{physical_interface_name}</name>
-                <vlan-tagging/>
                 <unit>
                     <name>{logical_interface_id}</name>
                     <vlan-id>{vlan_id}</vlan-id>
