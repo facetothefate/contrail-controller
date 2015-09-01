@@ -241,7 +241,7 @@ class PhysicalRouterConfig(object):
 
         if vni is None or router_external:
             etree.SubElement(ri, "instance-type").text = "vrf"
-            if !no_vrf_table_label:
+            if not no_vrf_table_label:
                 etree.SubElement(ri, "vrf-table-label")  #only for l3
             if fip_map is None:
                 for interface in interfaces:
