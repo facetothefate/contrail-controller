@@ -403,7 +403,7 @@ class ServiceTemplateSM(DBBaseSM):
         self.uuid = uuid
         self.service_instances = set()
         self.virtualization_type = 'virtual-machine'
-        self.service_appliance_sets = set()
+        self.service_appliance_sets = None
         self.update(obj_dict)
     # end __init__
 
@@ -417,7 +417,7 @@ class ServiceTemplateSM(DBBaseSM):
             self.virtualization_type = self.params.get(
                 'service_virtualization_type') or 'virtual-machine'
         self.update_multiple_refs('service_instance', obj)
-        self.update_multiple_refs('service_appliance_set', obj)
+        self.update_single_ref('service_appliance_set', obj)
         self.id_perms = obj.get('id_perms', None)
     # end update
 
