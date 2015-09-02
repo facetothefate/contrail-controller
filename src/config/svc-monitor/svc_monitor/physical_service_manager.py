@@ -4,7 +4,7 @@ from instance_manager import InstanceManager
 from config_db import ServiceApplianceSetSM, ServiceApplianceSM, PhysicalInterfaceSM
 from cfgm_common import svc_info
 
-class PhysicalMachineManager(InstanceManager):
+class PhysicalServiceManager(InstanceManager):
 
 
     def create_service(self, st, si):
@@ -12,11 +12,14 @@ class PhysicalMachineManager(InstanceManager):
             return
         #get service appliances from service template
         st_sets = list(st.service_appliance_sets)
+        if not st_sets:
+            self.logger.log_error("Can't find service appliances set")
+            return
         service_appliance_set = ServiceApplianceSetSM.get(st_sets[0])
         service_appliances = service_appliance_set.service_appliances
 
         #validation
-        if service_appliances == None:
+        if not service_appliances:
             self.logger.log_error("Can't find service appliances")
             return
 
@@ -72,10 +75,8 @@ class PhysicalMachineManager(InstanceManager):
             pi_uuid_set = list(sa.physical_interfaces)
             for i in range(0,len(ports)):
                 if i <= len(pi_uuid_set):
-                    pi = self._vnc_lib.physical_interface_read(id=pi_uuid_set[i])
-                    vmi = ports[i]
-                    vmi.add_physical_interface(pi)
-                    self._vnc_lib.virtual_machine_interface_update(vmi)
+                    self._vnc_lib.ref_update('virtual-machine-interface', 
+                        vmi.uuid, 'physical_interface_refs', pi_uuid_set[i], None, 'ADD')
 
         #fire change of the SI
         if si_vmi_added:
@@ -104,9 +105,8 @@ class PhysicalMachineManager(InstanceManager):
                 pi_refs = vmi.get_physical_interface_refs()
                 for pi_ref in pi_refs:
                     try:
-                        pi = self._vnc_lib.physical_interface_read(pi_ref['uuid'])
-                        vmi.del_physical_interface(pi)
-                        self._vnc_lib.virtual_machine_interface_update(vmi)
+                       self._vnc_lib.ref_update('virtual-machine-interface', 
+                            vmi.uuid, 'physical_interface_refs', pi_ref['uuid'], None, 'DELETE')
                     except:
                         pass
             except:
